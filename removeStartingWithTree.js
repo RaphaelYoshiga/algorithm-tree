@@ -4,10 +4,38 @@ function removeStartingWith(list, valuesToRemove) {
 
   const filteredList = [];
 
-  valuesToRemove.forEach(x => remove(treeRoot, x));
-  recursiveTransverse(treeRoot, filteredList);
+  valuesToRemove.forEach(toRemove => remove(treeRoot, toRemove));
+  buildListRecursively(treeRoot, filteredList);
 
   return filteredList;
+}
+
+function buildTree(list) {
+  const root = { children: {} };
+  let node = root;
+  list.forEach(value => {
+    addNodesForValue(value, node);
+
+    node = root;
+  });
+  return root;
+}
+
+function addNodesForValue(value, node) {
+  for (var i = 0; i < value.length; i++) {
+    let char = value.charAt(i);
+    if (node.children[char]) {
+      node = node.children[char];
+    } else {
+      const newNode = { children: {} };
+      node.children[char] = newNode;
+      node = newNode;
+    }
+  }
+
+  node.key = value;
+
+  return node;
 }
 
 function remove(treeRoot, toRemove) {
@@ -27,40 +55,16 @@ function remove(treeRoot, toRemove) {
   }
 
   delete previousNode.children[lastCharacter];
-
-
 }
 
-function recursiveTransverse(node, filteredList) {
-
+function buildListRecursively(node, filteredList) {
   if (node.key)
     filteredList.push(node.key);
 
   for (let key in node.children) {
-    console.log(key);
-    recursiveTransverse(node.children[key], filteredList);
+    buildListRecursively(node.children[key], filteredList);
   }
 }
 
-function buildTree(list) {
-  const root = { children: {} };
-  let node = root;
-  list.forEach(value => {
-    for (var i = 0; i < value.length; i++) {
-      let char = value.charAt(i);
-      if (node.children[char]) {
-        node = node.children[char];
-      } else {
-        const newNode = { children: {} };
-        node.children[char] = newNode;
-        node = newNode;
-      }
-    }
-
-    node.key = value;
-    node = root;
-  });
-  return root;
-}
 
 module.exports = removeStartingWith;
